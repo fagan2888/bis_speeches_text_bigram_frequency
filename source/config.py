@@ -8,6 +8,7 @@ data_dir = os.path.join(base_dir, 'data')
 output_base_dir = os.path.join(base_dir, 'output')
 create_dirs([output_base_dir])
 
+
 class Parameters:
     def __init__(self):
         self.base_dir = base_dir
@@ -19,6 +20,7 @@ class Parameters:
         item_strf = ['{} = {}'.format(attribute, value) for attribute, value in self.__dict__.items()]
         strf = 'Parameters(\n  {}\n)'.format('\n  '.join(item_strf))
         return strf
+
 
 parameters = Parameters()
 print(parameters)
