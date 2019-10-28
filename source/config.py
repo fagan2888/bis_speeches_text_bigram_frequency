@@ -1,6 +1,9 @@
 from utils import *
 import os
 
+# User configuration
+sentence_length_outlier = [0, 1, 2, 181, 252]
+
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print('base_dir:', base_dir)
 
@@ -11,6 +14,7 @@ create_dirs([output_base_dir])
 
 class Parameters:
     def __init__(self):
+        self.sentence_length_outlier = sentence_length_outlier
         self.base_dir = base_dir
         self.data_dir = data_dir
         self.output_base_dir = output_base_dir
