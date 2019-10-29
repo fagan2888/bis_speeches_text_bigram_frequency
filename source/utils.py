@@ -2,13 +2,17 @@ import pickle
 from datetime import datetime, timedelta
 import os
 import re
+import csv
+import time
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 from nltk import pos_tag
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
+from BigramCollocationFinder_custom import BigramCollocationFinder
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 def create_dirs(dir_list):
@@ -198,12 +202,84 @@ def get_grouped_list_in_dict(target_list, period='quarterly'):  # 'quarterly', '
         result_dict = dict_val_as_list_append(result_dict, grouping_key, _item)
     return result_dict
 
+
 def stopwords_set_filter(nltk_stopwords='english', custom_list=None):
     stopset = set()
     if nltk_stopwords is not None:
-        stopset.update(stopwords.words(nltk_stopwords)) 
+        stopset.update(stopwords.words(nltk_stopwords))
     if custom_list is not None:
         for _custom in custom_list:
             stopset.add(_custom)
-    filter_stops = lambda w: w in stopset 
+    filter_stops = lambda w: w in stopset
     return stopset, filter_stops
+
+
+def words_from_pos_tagged_words(pos_tagged_words):
+    return [x.strip() for (x, y) in pos_tagged_words]
+
+
+def get_one_dimensional_words(doc_list):
+    words = list()
+    for doc in doc_list:
+        for unigrams_with_pos in doc['unigrams_by_sentence']:
+            words.extend(words_from_pos_tagged_words(unigrams_with_pos))
+    return words
+
+
+def bigram_freq_rank_dict(finder, bigram_max_rank=None):
+    bigram_dict = dict()
+    _rank = 0
+    for _bigram, _freq in sorted(finder.ngram_fd.items(), key=lambda t: t[-1], reverse=True):  # frequency descending
+        _rank += 1
+        if _bigram[0] == _bigram[1]:
+            _rank -= 1
+            continue
+        bigram_dict[_bigram[0] + '-' + _bigram[1]] = (_freq, _rank)
+        if bigram_max_rank is not None and _rank == bigram_max_rank:
+            break
+    return bigram_dict
+
+
+def nltk_bigram_collocation_finder(word_list, bigram_window_size=2, filter_stops=None):
+    finder = BigramCollocationFinder.from_words(word_list, window_size=bigram_window_size)
+    if filter_stops is not None:
+        finder.apply_word_filter(filter_stops)
+    return finder
+
+
+def bow_unigram_freq_dict(word_list, stopset=None):
+    vectorizer = CountVectorizer(stop_words=stopset)
+    X = vectorizer.fit_transform(word_list)
+    terms = vectorizer.get_feature_names()
+    freqs = X.sum(axis=0).A1
+    unigram_bow_dict = dict(zip(terms, freqs))
+    return unigram_bow_dict
+
+
+def get_0_if_None(content):
+    if content is None:
+        return 0
+    return content
+
+
+def words_from_range(_period_dict, range_start, range_end):
+    _target_periods = [j for j in range(range_start, range_end)]
+    _target_period_list_of_list_of_doc = [_period_dict[_period_j] for j, _period_j in
+                                          enumerate(sorted(_period_dict.keys())) if j in _target_periods]
+    _target_doc_list = list()
+    for _target_period_list_of_doc in _target_period_list_of_list_of_doc:
+        for doc in _target_period_list_of_doc:
+            _target_doc_list.append(doc)
+    _target_words = get_one_dimensional_words(_target_doc_list)
+    return _target_words
+
+
+def start_csv(csv_filepath, csv_delimiter=','):
+    f = open(csv_filepath, 'w', encoding='utf-8-sig', newline='')
+    wr = csv.writer(f, delimiter=csv_delimiter)
+    return f, wr
+
+
+def end_csv(f):
+    f.close()
+    print('Creating .csv file completed: ', csv_filepath)
