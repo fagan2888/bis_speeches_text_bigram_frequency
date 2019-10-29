@@ -8,6 +8,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 from nltk import pos_tag
+from nltk.corpus import stopwords 
 
 
 def create_dirs(dir_list):
@@ -196,3 +197,13 @@ def get_grouped_list_in_dict(target_list, period='quarterly'):  # 'quarterly', '
         grouping_key = get_str_concat(_year, period_dict[_month])
         result_dict = dict_val_as_list_append(result_dict, grouping_key, _item)
     return result_dict
+
+def stopwords_set_filter(nltk_stopwords='english', custom_list=None):
+    stopset = set()
+    if nltk_stopwords is not None:
+        stopset.update(stopwords.words(nltk_stopwords)) 
+    if custom_list is not None:
+        for _custom in custom_list:
+            stopset.add(_custom)
+    filter_stops = lambda w: w in stopset 
+    return stopset, filter_stops

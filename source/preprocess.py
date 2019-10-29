@@ -65,8 +65,8 @@ def main():
                 i -= 1
             i += 1
     end_pkl(target_list, target_list_units_wo_outlier_filepath)
-
-    # grouping: annualy, semi-annualy, quarterly
+    
+    # grouping: quarterly, semi-annualy, annually
     for _period in ['quarterly', 'semiannually', 'annually']:
         target_period_dict = get_grouped_list_in_dict(target_list, period=_period)
         end_pkl(target_period_dict, os.path.join(output_base_dir,
