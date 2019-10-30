@@ -280,6 +280,6 @@ def start_csv(csv_filepath, csv_delimiter=','):
     return f, wr
 
 
-def end_csv(f):
+def end_csv(f, csv_filepath):
     f.close()
     print('Creating .csv file completed: ', csv_filepath)

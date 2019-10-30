@@ -22,9 +22,6 @@ bigram_by_period_dict_of_list_filepath = os.path.join(output_base_dir, 'bigram_b
 bigram_uniqueness_strength_pkl_filepath = os.path.join(output_base_dir,
                                                        get_str_concat('bigram-uniqueness-strength',
                                                                       get_now_time_str()) + '.pkl')
-bigram_uniqueness_strength_csv_filepath = os.path.join(output_base_dir,
-                                                       get_str_concat('bigram-uniqueness-strength',
-                                                                      get_now_time_str()) + '.csv')
 
 stopset, filter_stops = stopwords_set_filter('english', stopword_list)
 
@@ -59,10 +56,7 @@ def main():
     start = time.time()
     bigram_by_period_dict_of_list = get_bigram_by_period_dict_of_list()
     final_dict = {'quarterly': dict(), 'semiannually': dict(), 'annually': dict()}
-    f, wr = start_csv(bigram_uniqueness_strength_csv_filepath, csv_delimiter=',')
     for _period_category, (_period_dict, _ws) in period_dict.items():
-        wr.writerow([_period_category, 'bigram', 'raw_frequency', 'uniqueness', 'strength'])
-
         for k, _period in enumerate(sorted(_period_dict.keys())):
             if k - _ws <= 0:
                 continue
@@ -104,8 +98,6 @@ def main():
                     _strength += _first_term * _second_term
 
                 final_dict[_period_category][_period][_bigram] = (_freq, _uniqueness, _strength)
-                wr.writerow([_period, _bigram, _freq, _uniqueness, _strength])
-    end_csv(f)
     end_pkl(final_dict, bigram_uniqueness_strength_pkl_filepath, start)
 
 
