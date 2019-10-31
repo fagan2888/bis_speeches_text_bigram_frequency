@@ -36,12 +36,14 @@ period_dict = {'quarterly': (quarterly_target_doc_dict, ws_quarterly),
                'semiannually': (semiannually_target_doc_dict, ws_semiannually),
                'annually': (annually_target_doc_dict, ws_annually)}
 
+
 def get_lookup_finder():
     whole_words = get_one_dimensional_words(target_list)
-    lookup_finder = BigramCollocationFinder_nltk.from_words(whole_words, window_size=2) 
+    lookup_finder = BigramCollocationFinder_nltk.from_words(whole_words, window_size=2)
     if filter_stops is not None:
-        lookup_finder.apply_word_filter(filter_stops) 
+        lookup_finder.apply_word_filter(filter_stops)
     return lookup_finder
+
 
 def get_bigram_by_period_dict_of_list(lookup_finder):
     if os.path.exists(bigram_by_period_dict_of_list_filepath):
@@ -53,7 +55,8 @@ def get_bigram_by_period_dict_of_list(lookup_finder):
         for _period_category, (_period_dict, _) in period_dict.items():
             for i, _period in enumerate(sorted(_period_dict.keys())):
                 _this_words = words_from_range(_period_dict, i, i + 1)
-                _this_finder = bigram_collocation_finder_custom(lookup_finder, _this_words, bigram_window_size, filter_stops)
+                _this_finder = bigram_collocation_finder_custom(lookup_finder, _this_words, bigram_window_size,
+                                                                filter_stops)
                 _this_bigram_freq_rank_dict = bigram_freq_rank_dict(_this_finder, bigram_max_rank)
 
                 bigram_by_period_dict_of_list[_period_category].append(_this_bigram_freq_rank_dict)
@@ -74,12 +77,14 @@ def main():
             print('Processing', _period)
             # Uniqueness: Current Bigram frequency
             _current_words = words_from_range(_period_dict, k - _ws, k + 1)
-            _current_finder = bigram_collocation_finder_custom(lookup_finder, _current_words, bigram_window_size, filter_stops)
+            _current_finder = bigram_collocation_finder_custom(lookup_finder, _current_words, bigram_window_size,
+                                                               filter_stops)
             _current_bigram_freq_rank_dict = bigram_freq_rank_dict(_current_finder, bigram_max_rank)
 
             # Uniqueness: Reference Bigram frequency
             _reference_words = words_from_range(_period_dict, 0, k - _ws)
-            _reference_finder = bigram_collocation_finder_custom(lookup_finder, _reference_words, bigram_window_size, filter_stops)
+            _reference_finder = bigram_collocation_finder_custom(lookup_finder, _reference_words, bigram_window_size,
+                                                                 filter_stops)
             _reference_bigram_freq_rank_dict = bigram_freq_rank_dict(_reference_finder, bigram_max_rank)
 
             final_dict[_period_category][_period] = dict()

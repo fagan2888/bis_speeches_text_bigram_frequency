@@ -43,7 +43,6 @@ from nltk.metrics.association import QuadgramAssocMeasures
 from nltk.metrics.spearman import ranks_from_scores, spearman_correlation
 
 
-
 class AbstractCollocationFinder(object):
     """
     An abstract base class for collocation finders whose purpose is to
@@ -62,7 +61,7 @@ class AbstractCollocationFinder(object):
 
     @classmethod
     def _build_new_documents(
-        cls, documents, window_size, pad_left=False, pad_right=False, pad_symbol=None
+            cls, documents, window_size, pad_left=False, pad_right=False, pad_symbol=None
     ):
         '''
         Pad the document with the place holder according to the window_size
@@ -89,7 +88,7 @@ class AbstractCollocationFinder(object):
 
     @staticmethod
     def _ngram_freqdist(words, n):
-        return FreqDist(tuple(words[i : i + n]) for i in range(len(words) - 1))
+        return FreqDist(tuple(words[i: i + n]) for i in range(len(words) - 1))
 
     def _apply_filter(self, fn=lambda ngram, freq: False):
         """Generic filter removes ngrams from the frequency distribution
@@ -145,7 +144,8 @@ class AbstractCollocationFinder(object):
                 yield ngram
             else:
                 break
-                
+
+
 class BigramCollocationFinder(AbstractCollocationFinder):
     """A tool for the finding and ranking of bigram collocations or other
     association measures. It is often useful to use from_words() rather than
@@ -160,7 +160,7 @@ class BigramCollocationFinder(AbstractCollocationFinder):
         """
         AbstractCollocationFinder.__init__(self, word_fd, bigram_fd)
         self.window_size = window_size
-        
+
     def tuple_with_higher_freq(lookup_finder, _tuple):
         w1, w2 = _tuple
         _finder = lookup_finder
@@ -171,7 +171,7 @@ class BigramCollocationFinder(AbstractCollocationFinder):
             _first = w2
             _second = w1
         return (_first, _second)
-    
+
     @classmethod
     def from_words(cls, lookup_finder, words, window_size=2):
         """Construct a BigramCollocationFinder for all bigrams in the given
@@ -195,7 +195,6 @@ class BigramCollocationFinder(AbstractCollocationFinder):
                     bfd[(_first, _second)] += 1
         return cls(wfd, bfd, window_size=window_size)
 
-
     def score_ngram(self, score_fn, w1, w2):
         """Returns the score for a given bigram using the given scoring
         function.  Following Church and Hanks (1990), counts are scaled by
@@ -208,7 +207,6 @@ class BigramCollocationFinder(AbstractCollocationFinder):
         n_ix = self.word_fd[w1]
         n_xi = self.word_fd[w2]
         return score_fn(n_ii, (n_ix, n_xi), n_all)
-
 
 
 class TrigramCollocationFinder(AbstractCollocationFinder):
@@ -255,14 +253,12 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
                 tfd[(w1, w2, w3)] += 1
         return cls(wfd, bfd, wildfd, tfd)
 
-
     def bigram_finder(self):
         """Constructs a bigram collocation finder with the bigram and unigram
         data from this finder. Note that this does not include any filtering
         applied to this finder.
         """
         return BigramCollocationFinder(self.word_fd, self.bigram_fd)
-
 
     def score_ngram(self, score_fn, w1, w2, w3):
         """Returns the score for a given trigram using the given scoring
@@ -279,7 +275,6 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
         n_xix = self.word_fd[w2]
         n_xxi = self.word_fd[w3]
         return score_fn(n_iii, (n_iix, n_ixi, n_xii), (n_ixx, n_xix, n_xxi), n_all)
-
 
 
 class QuadgramCollocationFinder(AbstractCollocationFinder):
@@ -337,7 +332,6 @@ class QuadgramCollocationFinder(AbstractCollocationFinder):
 
         return cls(ixxx, iiii, ii, iii, ixi, ixxi, iixi, ixii)
 
-
     def score_ngram(self, score_fn, w1, w2, w3, w4):
         n_all = self.N
         n_iiii = self.ngram_fd[(w1, w2, w3, w4)]
@@ -366,7 +360,6 @@ class QuadgramCollocationFinder(AbstractCollocationFinder):
             (n_ixxx, n_xixx, n_xxix, n_xxxi),
             n_all,
         )
-
 
 
 def demo(scorer=None, compare_scorer=None):
