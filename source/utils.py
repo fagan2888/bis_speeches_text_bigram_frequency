@@ -240,7 +240,7 @@ def bigram_freq_rank_dict(finder, bigram_max_rank=None):
     return bigram_dict
 
 
-def nltk_bigram_collocation_finder(lookup_finder, word_list, bigram_window_size=2, filter_stops=None):
+def bigram_collocation_finder_custom(lookup_finder, word_list, bigram_window_size=2, filter_stops=None):
     finder = BigramCollocationFinder.from_words(lookup_finder, word_list, window_size=bigram_window_size)
     if filter_stops is not None:
         finder.apply_word_filter(filter_stops)
