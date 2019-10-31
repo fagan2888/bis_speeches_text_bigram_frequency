@@ -4,6 +4,7 @@ import numpy as np
 import math
 import time
 import os
+from nltk.collocations import BigramCollocationFinder as BigramCollocationFinder_nltk
 
 bigram_window_size = parameters.bigram_window_size
 bigram_max_rank = parameters.bigram_max_rank
@@ -14,9 +15,10 @@ ws_annually = parameters.ws_annually
 strength_alpha = parameters.strength_alpha
 output_base_dir = parameters.output_base_dir
 
-quarterly_filepath = 'target-list-units-grouped_quarterly_20191028-21-52-08.pkl'
-semiannually_filepath = 'target-list-units-grouped_semiannually_20191028-21-52-09.pkl'
-annually_filepath = 'target-list-units-grouped_annually_20191028-21-52-09.pkl'
+target_list_units_wo_outlier_filepath = 'target-list-units-wo-outlier.pkl'
+quarterly_filepath = 'target-list-units-grouped_quarterly.pkl'
+semiannually_filepath = 'target-list-units-grouped_semiannually.pkl'
+annually_filepath = 'target-list-units-grouped_annually.pkl'
 
 bigram_by_period_dict_of_list_filepath = os.path.join(output_base_dir, 'bigram_by_period_dict_of_list.pkl')
 bigram_uniqueness_strength_pkl_filepath = os.path.join(output_base_dir,
@@ -25,14 +27,21 @@ bigram_uniqueness_strength_pkl_filepath = os.path.join(output_base_dir,
 
 stopset, filter_stops = stopwords_set_filter('english', stopword_list)
 
-quarterly_target_doc_dict = load_pkl(os.path.join(parameters.output_base_dir, quarterly_filepath))
-semiannually_target_doc_dict = load_pkl(os.path.join(parameters.output_base_dir, semiannually_filepath))
-annually_target_doc_dict = load_pkl(os.path.join(parameters.output_base_dir, annually_filepath))
+target_list = load_pkl(os.path.join(output_base_dir, target_list_units_wo_outlier_filepath))
+quarterly_target_doc_dict = load_pkl(os.path.join(output_base_dir, quarterly_filepath))
+semiannually_target_doc_dict = load_pkl(os.path.join(output_base_dir, semiannually_filepath))
+annually_target_doc_dict = load_pkl(os.path.join(output_base_dir, annually_filepath))
 
 period_dict = {'quarterly': (quarterly_target_doc_dict, ws_quarterly),
                'semiannually': (semiannually_target_doc_dict, ws_semiannually),
                'annually': (annually_target_doc_dict, ws_annually)}
 
+def get_lookup_finder():
+    whole_words = get_one_dimensional_words(target_list)
+    lookup_finder = BigramCollocationFinder_nltk.from_words(whole_words, window_size=2) 
+    if filter_stops is not None:
+        lookup_finder.apply_word_filter(filter_stops) 
+    return lookup_finder
 
 def get_bigram_by_period_dict_of_list():
     if os.path.exists(bigram_by_period_dict_of_list_filepath):
@@ -54,6 +63,7 @@ def get_bigram_by_period_dict_of_list():
 
 def main():
     start = time.time()
+    lookup_finder = get_lookup_finder()
     bigram_by_period_dict_of_list = get_bigram_by_period_dict_of_list()
     final_dict = {'quarterly': dict(), 'semiannually': dict(), 'annually': dict()}
     for _period_category, (_period_dict, _ws) in period_dict.items():
@@ -64,12 +74,12 @@ def main():
             print('Processing', _period)
             # Uniqueness: Current Bigram frequency
             _current_words = words_from_range(_period_dict, k - _ws, k + 1)
-            _current_finder = nltk_bigram_collocation_finder(_current_words, bigram_window_size, filter_stops)
+            _current_finder = nltk_bigram_collocation_finder(lookup_finder, _current_words, bigram_window_size, filter_stops)
             _current_bigram_freq_rank_dict = bigram_freq_rank_dict(_current_finder, bigram_max_rank)
 
             # Uniqueness: Reference Bigram frequency
             _reference_words = words_from_range(_period_dict, 0, k - _ws)
-            _reference_finder = nltk_bigram_collocation_finder(_reference_words, bigram_window_size, filter_stops)
+            _reference_finder = nltk_bigram_collocation_finder(lookup_finder, _reference_words, bigram_window_size, filter_stops)
             _reference_bigram_freq_rank_dict = bigram_freq_rank_dict(_reference_finder, bigram_max_rank)
 
             final_dict[_period_category][_period] = dict()

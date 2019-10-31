@@ -43,6 +43,7 @@ from nltk.metrics.association import QuadgramAssocMeasures
 from nltk.metrics.spearman import ranks_from_scores, spearman_correlation
 
 
+
 class AbstractCollocationFinder(object):
     """
     An abstract base class for collocation finders whose purpose is to
@@ -144,8 +145,7 @@ class AbstractCollocationFinder(object):
                 yield ngram
             else:
                 break
-
-
+                
 class BigramCollocationFinder(AbstractCollocationFinder):
     """A tool for the finding and ranking of bigram collocations or other
     association measures. It is often useful to use from_words() rather than
@@ -160,9 +160,20 @@ class BigramCollocationFinder(AbstractCollocationFinder):
         """
         AbstractCollocationFinder.__init__(self, word_fd, bigram_fd)
         self.window_size = window_size
-
+        
+    def tuple_with_higher_freq(lookup_finder, _tuple):
+        w1, w2 = _tuple
+        _finder = lookup_finder
+        if _finder.ngram_fd[(w1, w2)] > _finder.ngram_fd[(w2, w1)]:
+            _first = w1
+            _second = w2
+        else:
+            _first = w2
+            _second = w1
+        return (_first, _second)
+    
     @classmethod
-    def from_words(cls, words, window_size=2):
+    def from_words(cls, lookup_finder, words, window_size=2):
         """Construct a BigramCollocationFinder for all bigrams in the given
         sequence.  When window_size > 2, count non-contiguous bigrams, in the
         style of Church and Hanks's (1990) association ratio.
@@ -180,11 +191,7 @@ class BigramCollocationFinder(AbstractCollocationFinder):
             wfd[w1] += 1
             for w2 in window[1:]:
                 if w2 is not None:
-                    _first = max(w1, w2)
-                    _second = min(w1, w2)
-#                    if (w2, w1) in bfd:
-#                        bfd[(w2, w1)] += 1 
-#                        continue
+                    (_first, _second) = cls.tuple_with_higher_freq(lookup_finder, (w1, w2))
                     bfd[(_first, _second)] += 1
         return cls(wfd, bfd, window_size=window_size)
 
