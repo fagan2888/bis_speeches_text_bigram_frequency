@@ -19,7 +19,7 @@ def main():
     f, wr = start_csv(top5_csv_filepath, csv_delimiter=',')
     for printing_order in printing_order_dict.keys():
         for _period_category, _period_dict in bigram_uniqueness_strength_dict.items():
-            wr.writerow(['top5_criteria' 'period_category', 'period', 'bigram', 'frequency', 'uniqueness', 'strength'])
+            wr.writerow(['top5_criteria', 'period_category', 'period', 'bigram', 'frequency', 'uniqueness', 'strength'])
             for _period in sorted(_period_dict.keys()):
                 count = 0
                 for _bigram, (_freq, _uniqueness, _strength) in sorted(_period_dict[_period].items(),
