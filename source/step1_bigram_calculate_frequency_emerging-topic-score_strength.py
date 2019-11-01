@@ -71,7 +71,7 @@ def main():
     final_dict = {'quarterly': dict(), 'semiannually': dict(), 'annually': dict()}
     for _period_category, (_period_dict, _ws) in period_dict.items():
         for k, _period in enumerate(sorted(_period_dict.keys())):
-            if k - _ws <= 0:
+            if k - _ws < 0:
                 continue
 
             print('Processing', _period)
