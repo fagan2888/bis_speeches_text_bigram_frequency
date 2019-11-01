@@ -9,9 +9,9 @@ from nltk.collocations import BigramCollocationFinder as BigramCollocationFinder
 bigram_window_size = parameters.bigram_window_size
 bigram_max_rank = parameters.bigram_max_rank
 stopword_list = parameters.stopword_list
-ws_quarterly = parameters.ws_quarterly - 1
-ws_semiannually = parameters.ws_semiannually - 1
-ws_annually = parameters.ws_annually - 1
+ws_quarterly = parameters.ws_quarterly
+ws_semiannually = parameters.ws_semiannually
+ws_annually = parameters.ws_annually
 strength_alpha = parameters.strength_alpha
 output_base_dir = parameters.output_base_dir
 
@@ -21,8 +21,8 @@ semiannually_filepath = 'target-list-units-grouped_semiannually.pkl'
 annually_filepath = 'target-list-units-grouped_annually.pkl'
 
 bigram_by_period_dict_of_list_filepath = os.path.join(output_base_dir, 'bigram_by_period_dict_of_list.pkl')
-bigram_uniqueness_strength_pkl_filepath = os.path.join(output_base_dir,
-                                                       get_str_concat('bigram-uniqueness-strength',
+bigram_emerging_topic_score_strength_pkl_filepath = os.path.join(output_base_dir,
+                                                       get_str_concat('bigram-emerging_topic_score-strength',
                                                                       get_now_time_str()) + '.pkl')
 
 stopset, filter_stops = stopwords_set_filter('english', stopword_list)
@@ -75,14 +75,14 @@ def main():
                 continue
 
             print('Processing', _period)
-            # Uniqueness: Current Bigram frequency
-            _current_words = words_from_range(_period_dict, k - _ws, k + 1)
+            # Emerging_Topic_Score: Current Bigram frequency
+            _current_words = words_from_range(_period_dict, k, k + 1)
             _current_finder = bigram_collocation_finder_custom(lookup_finder, _current_words, bigram_window_size,
                                                                filter_stops)
             _current_bigram_freq_rank_dict = bigram_freq_rank_dict(_current_finder, bigram_max_rank)
 
-            # Uniqueness: Reference Bigram frequency
-            _reference_words = words_from_range(_period_dict, 0, k - _ws)
+            # Emerging_Topic_Score: Reference Bigram frequency
+            _reference_words = words_from_range(_period_dict, k - _ws, k - 1)
             _reference_finder = bigram_collocation_finder_custom(lookup_finder, _reference_words, bigram_window_size,
                                                                  filter_stops)
             _reference_bigram_freq_rank_dict = bigram_freq_rank_dict(_reference_finder, bigram_max_rank)
@@ -90,14 +90,14 @@ def main():
             final_dict[_period_category][_period] = dict()
             for _bigram, (_freq, _rank) in sorted(_current_bigram_freq_rank_dict.items(),
                                                   key=lambda t: t[-1][1]):  # ranking ascending
-                # Uniqueness: score
-                _numerator = _freq
+                # Emerging_Topic_Score: score
+                _numerator = _freq * _ws
                 if _reference_bigram_freq_rank_dict.get(_bigram) is None:
                     _reference_freq = 0
                 else:
                     _reference_freq = _reference_bigram_freq_rank_dict.get(_bigram)[0]
                 _denominator = _reference_freq + 1
-                _uniqueness = np.log(_numerator / _denominator)
+                _emerging_topic_score = np.log(_numerator / _denominator)
 
                 # Strength: score
                 _strength = 0
@@ -112,8 +112,8 @@ def main():
                     _second_term = math.pow(strength_alpha, -i_ + k)
                     _strength += _first_term * _second_term
 
-                final_dict[_period_category][_period][_bigram] = (_freq, _uniqueness, _strength)
-    end_pkl(final_dict, bigram_uniqueness_strength_pkl_filepath, start)
+                final_dict[_period_category][_period][_bigram] = (_freq, _emerging_topic_score, _strength)
+    end_pkl(final_dict, bigram_emerging_topic_score_strength_pkl_filepath, start)
 
 
 if __name__ == '__main__':

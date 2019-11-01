@@ -9,7 +9,7 @@ stopword_list = ['financial', 'market', 'federal', 'bank', 'banking', 'bankers',
                  'reserve', 'policy', 'state', 'central', 'board', 'percent', 'rate'
     , 'mr', 'alan', 'greenspan', 'ben', 'bernanke', 'janet', 'yellen', 'jerome', 'powell', 'vol'
     , 'ha', 'wa', 'ii']
-ws_quarterly, ws_semiannually, ws_annually = 3, 1, 0
+ws_quarterly, ws_semiannually, ws_annually = 4, 2, 1
 strength_alpha = 0.9
 
 # System configuration
