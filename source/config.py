@@ -35,6 +35,9 @@ class Parameters:
         self.data_dir = data_dir
         self.output_base_dir = output_base_dir
         self.bis_raw_pkl_filepath = os.path.join(data_dir, 'bis_w_content_FINAL.pkl')
+        self.fred_gdp_quarterly_csv_filepath = os.path.join(data_dir, 'fred_gdp_quarterly.csv')
+        self.fred_gdp_semiannually_csv_filepath = os.path.join(data_dir, 'fred_gdp_semiannually.csv')
+        self.fred_gdp_annually_csv_filepath = os.path.join(data_dir, 'fred_gdp_annually.csv')
 
     def __str__(self):
         item_strf = ['{} = {}'.format(attribute, value) for attribute, value in self.__dict__.items()]
