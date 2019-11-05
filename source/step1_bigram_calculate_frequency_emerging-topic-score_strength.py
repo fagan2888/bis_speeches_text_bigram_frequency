@@ -91,12 +91,13 @@ def main():
             for _bigram, (_freq, _rank) in sorted(_current_bigram_freq_rank_dict.items(),
                                                   key=lambda t: t[-1][1]):  # ranking ascending
                 # Emerging_Topic_Score: score
-                _numerator = _freq * _ws
+                _numerator = _freq
                 if _reference_bigram_freq_rank_dict.get(_bigram) is None:
                     _reference_freq = 0
                 else:
                     _reference_freq = _reference_bigram_freq_rank_dict.get(_bigram)[0]
-                _denominator = _reference_freq + 1
+                _denominator_sub = _reference_freq + 1
+                _denominator = _denominator_sub / _ws
                 _emerging_topic_score = np.log(_numerator / _denominator)
 
                 # Strength: score
