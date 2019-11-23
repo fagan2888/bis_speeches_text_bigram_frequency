@@ -283,3 +283,35 @@ def start_csv(csv_filepath, csv_delimiter=','):
 def end_csv(f, csv_filepath):
     f.close()
     print('Creating .csv file completed: ', csv_filepath)
+
+def get_index_dict(fred_gdp_index_dict_pkl_filepath, fred_index_filepath_dict):
+    if os.path.exists(fred_gdp_index_dict_pkl_filepath):
+        index_dict = load_pkl(fred_gdp_index_dict_pkl_filepath)
+    else:
+        index_dict = dict()
+
+        for period_category, index_data_filepath in fred_index_filepath_dict.items():
+            index_dict[period_category] = dict()
+
+            f = open(index_data_filepath, 'r', encoding='utf-8')
+            rdr = csv.reader(f)
+            firstline = True
+            for line in rdr:
+                if firstline:
+                    firstline = False
+                    continue
+                _period = line[0]
+                if _period == '':
+                    continue
+                _val = line[1]
+                index_dict[period_category][_period] = _val
+            f.close()
+
+        end_pkl(index_dict, fred_gdp_index_dict_pkl_filepath)
+    return index_dict
+
+def rescale_(values, scaler):
+    values = values.reshape((len(values), 1))
+    scaler = scaler.fit(values)
+    normalized = scaler.transform(values)
+    return normalized

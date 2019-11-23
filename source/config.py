@@ -38,6 +38,7 @@ class Parameters:
         self.fred_gdp_quarterly_csv_filepath = os.path.join(data_dir, 'fred_gdp_quarterly.csv')
         self.fred_gdp_semiannually_csv_filepath = os.path.join(data_dir, 'fred_gdp_semiannually.csv')
         self.fred_gdp_annually_csv_filepath = os.path.join(data_dir, 'fred_gdp_annually.csv')
+        self.fred_unemp_quarterly_csv_filepath = os.path.join(data_dir, 'fred_unemp_quarterly.csv')
 
     def __str__(self):
         item_strf = ['{} = {}'.format(attribute, value) for attribute, value in self.__dict__.items()]

@@ -6,7 +6,7 @@ import os
 max_display_count = 5
 
 output_base_dir = parameters.output_base_dir
-bigram_emerging_topic_score_strength_dict_filepath = 'bigram-emerging_topic_score-strength_20191105-21-09-20.pkl'
+bigram_emerging_topic_score_strength_dict_filepath = 'bigram-emerging_topic_score-strength_20191123-21-17-50_wo_ranking.pkl'
 bigram_emerging_topic_score_strength_dict = load_pkl(os.path.join(output_base_dir, bigram_emerging_topic_score_strength_dict_filepath))
 
 top5_csv_filepath = os.path.join(output_base_dir, get_str_concat('top5-frequency-emerging_topic_score-strength',

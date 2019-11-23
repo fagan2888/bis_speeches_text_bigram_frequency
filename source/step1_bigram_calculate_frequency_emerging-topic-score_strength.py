@@ -98,7 +98,7 @@ def main():
                     _reference_freq = _reference_bigram_freq_rank_dict.get(_bigram)[0]
                 _denominator_sub = _reference_freq + 1
                 _denominator = _denominator_sub / _ws
-                _emerging_topic_score = np.log(_numerator / _denominator)
+                _emerging_topic_score = _numerator / _denominator
 
                 # Strength: score
                 _strength = 0
