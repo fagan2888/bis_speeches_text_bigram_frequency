@@ -148,6 +148,13 @@ def _period_dict(target_dict, _period, start, end):
         target_dict[_month] = _period
     return target_dict
 
+def monthly_dict():
+    target_dict = dict()
+    for i in range(1, 12+1):
+        _period = str(i)
+        start, end = i, i
+        target_dict = _period_dict(target_dict, _period, start, end)
+    return target_dict
 
 def quarterly_dict():
     target_dict = dict()
@@ -186,7 +193,9 @@ def dict_val_as_list_append(target_dict, index_key, val):
 
 
 def get_grouped_list_in_dict(target_list, period='quarterly'):  # 'quarterly', 'semiannually', 'annually'
-    if period == 'quarterly':
+    if period == 'monthly':
+        period_dict = monthly_dict()
+    elif period == 'quarterly':
         period_dict = quarterly_dict()
     elif period == 'semiannually':
         period_dict = semiannually_dict()
