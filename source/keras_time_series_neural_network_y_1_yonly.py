@@ -59,7 +59,7 @@ processed_list_pkl_filepath = os.path.join(parameters.output_base_dir, 'topn_50_
 # s3 = rescale_rolling(s3, 3)
 
 s4 = pd.Series(fred_data_y_dict['unemployment_not_adjusted'])
-# s4 = rescale_rolling(s2, 3)
+s4 = rescale_rolling(s2, 3)
 
 dataset = pd.concat([s4, s4], axis=1)
 values = dataset.values   # pd.Series -> numpy.ndarray
