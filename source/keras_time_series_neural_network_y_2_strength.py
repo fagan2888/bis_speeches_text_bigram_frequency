@@ -54,12 +54,12 @@ processed_list_pkl_filepath = os.path.join(parameters.output_base_dir, 'topn_50_
 # s1 = pd.Series(proposed_data_x_dict['frequency']['unemployment_not_adjusted'])
 # s1 = rescale_rolling(s1, 3)
 s2 = pd.Series(proposed_data_x_dict['strength']['unemployment_not_adjusted'])
-s2 = rescale_rolling(s2, 3)
+# s2 = rescale_rolling(s2, 3)
 # s3 = pd.Series(proposed_data_x_dict['emerging_topic_score']['unemployment_not_adjusted'])
 # s3 = rescale_rolling(s3, 3)
 
 s4 = pd.Series(fred_data_y_dict['unemployment_not_adjusted'])
-s4 = rescale_rolling(s2, 3)
+# s4 = rescale_rolling(s2, 3)
 
 dataset = pd.concat([s2, s4], axis=1)
 values = dataset.values   # pd.Series -> numpy.ndarray
@@ -106,11 +106,11 @@ values[:,feature_num - 1] = encoder.fit_transform(values[:,feature_num - 1])
 # ensure all data is float
 values = values.astype('float32')
 # normalize features
-# scaler = MinMaxScaler(feature_range=(0, 1))
-# scaled = scaler.fit_transform(values)
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(values)
 # frame as supervised learning
-# reframed = series_to_supervised(scaled, 1, 1)
-reframed = series_to_supervised(values, 1, 1)
+reframed = series_to_supervised(scaled, 1, 1)
+# reframed = series_to_supervised(values, 1, 1)
 
 # drop columns we don't want to predict
 reframed.drop(reframed.columns[[2]], axis=1, inplace=True)
@@ -137,10 +137,10 @@ model.compile(loss='mae', optimizer='adam')
 # fit network
 history = model.fit(train_X, train_y, epochs=50, batch_size=1, validation_data=(test_X, test_y), verbose=2, shuffle=False)
 #     # plot history
-#     pyplot.plot(history.history['loss'], label='train')
-#     pyplot.plot(history.history['val_loss'], label='test')
-#     pyplot.legend()
-#     pyplot.show()
+    pyplot.plot(history.history['loss'], label='train')
+    pyplot.plot(history.history['val_loss'], label='test')
+    pyplot.legend()
+    pyplot.show()
 
 # make a prediction
 yhat = model.predict(test_X)
