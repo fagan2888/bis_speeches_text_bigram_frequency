@@ -34,6 +34,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
+loss_fun = 'mse'
+
 def rescale_rolling(values, rolling_window):
     df = pd.DataFrame(values)
     normalized = (df - df.rolling(rolling_window).mean()) / df.rolling(rolling_window).std()
@@ -135,7 +137,7 @@ print(train_X.shape, train_y.shape, test_X.shape, test_y.shape)
 model = Sequential()
 model.add(LSTM(8, input_shape=(train_X.shape[1], train_X.shape[2])))
 model.add(Dense(1))
-model.compile(loss='mae', optimizer='adam')
+model.compile(loss=loss_fun, optimizer='adam')
 # fit network
 history = model.fit(train_X, train_y, epochs=50, batch_size=1, validation_data=(test_X, test_y), verbose=2, shuffle=False)
 #     # plot history
@@ -164,4 +166,4 @@ inv_y = inv_y[:,0]
 rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
 print('Test RMSE: %.3f' % rmse)
 
-fig.savefig('../output/feature1_'+ '%.4f' % rmse +'.png')
+fig.savefig('../output/%s_feature4_%.4f.png' % (loss_fun, rmse))
