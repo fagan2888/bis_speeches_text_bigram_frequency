@@ -106,10 +106,11 @@ values[:,feature_num - 1] = encoder.fit_transform(values[:,feature_num - 1])
 # ensure all data is float
 values = values.astype('float32')
 # normalize features
-scaler = MinMaxScaler(feature_range=(0, 1))
-scaled = scaler.fit_transform(values)
+# scaler = MinMaxScaler(feature_range=(0, 1))
+# scaled = scaler.fit_transform(values)
 # frame as supervised learning
-reframed = series_to_supervised(scaled, 1, 1)
+# reframed = series_to_supervised(scaled, 1, 1)
+reframed = series_to_supervised(values, 1, 1)
 
 # drop columns we don't want to predict
 reframed.drop(reframed.columns[[2]], axis=1, inplace=True)
