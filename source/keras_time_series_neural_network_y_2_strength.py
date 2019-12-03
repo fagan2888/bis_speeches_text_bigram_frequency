@@ -165,4 +165,4 @@ inv_y = inv_y[:,0]
 rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
 print('Test RMSE: %.3f' % rmse)
 
-fig.savefig('../output/%s_feature4_%.4f.png' % (loss_fun, rmse))
+fig.savefig('../output/%s_feature2_%s_%.4f.png' % (loss_fun, s2_index_name, rmse))

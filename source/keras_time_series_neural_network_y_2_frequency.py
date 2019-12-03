@@ -34,6 +34,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
+s2_index_name = 'frequency'
 loss_fun = 'mse'
 
 def rescale_rolling(values, rolling_window):
@@ -55,15 +56,15 @@ processed_list_pkl_filepath = os.path.join(parameters.output_base_dir, 'topn_50_
 
 # s1 = pd.Series(proposed_data_x_dict['frequency']['unemployment_not_adjusted'])
 # s1 = rescale_rolling(s1, 3)
-# s2 = pd.Series(proposed_data_x_dict['strength']['unemployment_not_adjusted'])
+s2 = pd.Series(proposed_data_x_dict[s2_index_name]['unemployment_not_adjusted'])
 # s2 = rescale_rolling(s2, 3)
 # s3 = pd.Series(proposed_data_x_dict['emerging_topic_score']['unemployment_not_adjusted'])
 # s3 = rescale_rolling(s3, 3)
 
 s4 = pd.Series(fred_data_y_dict['unemployment_not_adjusted'])
-# s4 = rescale_rolling(s4, 3)
+# s4 = rescale_rolling(s2, 3)
 
-dataset = pd.concat([s4, s4], axis=1)
+dataset = pd.concat([s2, s4], axis=1)
 values = dataset.values   # pd.Series -> numpy.ndarray
 
 # specify columns to plot
@@ -107,11 +108,9 @@ encoder = LabelEncoder()
 values[:,feature_num - 1] = encoder.fit_transform(values[:,feature_num - 1])
 # ensure all data is float
 values = values.astype('float32')
-
 # normalize features
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled = scaler.fit_transform(values)
-
 # frame as supervised learning
 reframed = series_to_supervised(scaled, 1, 1)
 # reframed = series_to_supervised(values, 1, 1)
@@ -166,4 +165,4 @@ inv_y = inv_y[:,0]
 rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
 print('Test RMSE: %.3f' % rmse)
 
-fig.savefig('../output/%s_feature1_%.4f.png' % (loss_fun, rmse))
+fig.savefig('../output/%s_feature2_%s_%.4f.png' % (loss_fun, s2_index_name, rmse))
