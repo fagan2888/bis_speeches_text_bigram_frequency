@@ -34,6 +34,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
+index_name = 'inflation_rate_percentage_change'
+pkl_file_path = 'inflation_rolling_3_period_x_y_dict.pkl'
+
 s2_index_name = 'strength'
 loss_fun = 'mse'
 
@@ -51,17 +54,17 @@ def create_dataset(dataset, look_back=1):
         dataY.append(dataset[i + look_back, -1])
     return np.array(dataX), np.array(dataY)
 
-processed_list_pkl_filepath = os.path.join(parameters.output_base_dir, 'topn_50_rolling_3_period_x_y_dict_NOT_ALIGNED.pkl') 
+processed_list_pkl_filepath = os.path.join(parameters.output_base_dir, pkl_file_path) 
 [period_dict, proposed_data_x_dict, fred_data_y_dict] = load_pkl(processed_list_pkl_filepath)
 
 # s1 = pd.Series(proposed_data_x_dict['frequency']['unemployment_not_adjusted'])
 # s1 = rescale_rolling(s1, 3)
-s2 = pd.Series(proposed_data_x_dict[s2_index_name]['unemployment_not_adjusted'])
+s2 = pd.Series(proposed_data_x_dict[s2_index_name][index_name])
 # s2 = rescale_rolling(s2, 3)
 # s3 = pd.Series(proposed_data_x_dict['emerging_topic_score']['unemployment_not_adjusted'])
 # s3 = rescale_rolling(s3, 3)
 
-s4 = pd.Series(fred_data_y_dict['unemployment_not_adjusted'])
+s4 = pd.Series(fred_data_y_dict[index_name])
 # s4 = rescale_rolling(s2, 3)
 
 dataset = pd.concat([s2, s4], axis=1)
@@ -165,4 +168,4 @@ inv_y = inv_y[:,0]
 rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
 print('Test RMSE: %.3f' % rmse)
 
-fig.savefig('../output/%s_feature2_%s_%.4f.png' % (loss_fun, s2_index_name, rmse))
+fig.savefig('../output/%s_%s_feature4_%s_%.4f.png' % (index_name, loss_fun, s2_index_name, rmse))
