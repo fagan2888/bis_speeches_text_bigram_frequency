@@ -65,14 +65,14 @@ def dates_between(start_dt, end_dt):
     return dates
 
 
-def get_target_list_filtered_by_author_and_years(content_dict, target_author, target_dates):
+def get_target_list_filtered_by_author_and_years(df, target_author, target_dates):
+    df_author = df[df['short_info'].str.contains(target_author, na=False)]
+    df_dates = df_author[df_author.date.isin(target_dates)]
+    
     target_list = list()
-    for _key in content_dict.keys():
-        _date = content_dict[_key]['date']
-        _title = content_dict[_key]['short_info']
-
-        if _date in target_dates and target_author in _title:
-            target_list.append(content_dict[_key])
+    for _, _target_row in df_dates.iterrows():
+        target_list.append(_target_row.to_dict())
+        
     return target_list
 
 

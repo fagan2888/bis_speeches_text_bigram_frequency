@@ -2,6 +2,7 @@ from config import parameters
 from utils import *
 import os
 import re
+import pandas as pd
 
 # User configuration
 sentence_length_outlier = parameters.sentence_length_outlier
@@ -9,7 +10,7 @@ sentence_length_outlier = parameters.sentence_length_outlier
 base_dir = parameters.base_dir
 data_dir = parameters.data_dir
 output_base_dir = parameters.output_base_dir
-bis_raw_pkl_filepath = parameters.bis_raw_pkl_filepath
+bis_raw_csv_filepath = parameters.bis_raw_csv_filepath
 
 target_list_units_wo_outlier_filepath = os.path.join(output_base_dir,
                                                      get_str_concat('target-list-units-wo-outlier',
@@ -30,13 +31,13 @@ def _get_target_dict():
 
 
 def main():
-    data_dict = load_pkl(bis_raw_pkl_filepath)
+    df = pd.read_csv(bis_raw_csv_filepath)
     target_dict = _get_target_dict()
 
     # Target document list
     target_list = list()
     for target_author, target_dates in target_dict.items():
-        target_list.extend(get_target_list_filtered_by_author_and_years(data_dict, target_author, target_dates))
+        target_list.extend(get_target_list_filtered_by_author_and_years(df, target_author, target_dates))
 
     # Noun, Adjective, Adverb, Verb only
     count = 0
@@ -66,8 +67,8 @@ def main():
             i += 1
     end_pkl(target_list, target_list_units_wo_outlier_filepath)
     
-    # grouping: monthly, quarterly, semi-annualy, annually
-    for _period in ['monthly']:
+    # grouping: 
+    for _period in ['monthly', 'quarterly', 'semiannually', 'annually']:
         target_period_dict = get_grouped_list_in_dict(target_list, period=_period)
         end_pkl(target_period_dict, os.path.join(output_base_dir,
                                                  get_str_concat('target-list-units-grouped', _period,

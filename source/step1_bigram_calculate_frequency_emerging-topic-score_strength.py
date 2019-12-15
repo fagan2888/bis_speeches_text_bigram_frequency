@@ -15,12 +15,12 @@ ws_annually = parameters.ws_annually
 strength_alpha = parameters.strength_alpha
 output_base_dir = parameters.output_base_dir
 
-target_list_units_wo_outlier_filepath = 'target-list-units-wo-outlier.pkl'
-quarterly_filepath = 'target-list-units-grouped_quarterly.pkl'
-semiannually_filepath = 'target-list-units-grouped_semiannually.pkl'
-annually_filepath = 'target-list-units-grouped_annually.pkl'
+target_list_units_wo_outlier_filepath = 'target-list-units-wo-outlier_20191215-19-50-45.pkl'
+quarterly_filepath = 'target-list-units-grouped_quarterly_20191215-19-51-59.pkl'
+semiannually_filepath = 'target-list-units-grouped_semiannually_20191215-19-52-00.pkl'
+annually_filepath = 'target-list-units-grouped_annually_20191215-19-52-00.pkl'
 
-bigram_by_period_dict_of_list_filepath = os.path.join(output_base_dir, 'bigram_by_period_dict_of_list.pkl')
+bigram_by_period_dict_of_list_filepath = os.path.join(output_base_dir, get_str_concat('lookup_bigram_by_period_dict_of_list', get_now_time_str()) + '.pkl')
 bigram_emerging_topic_score_strength_pkl_filepath = os.path.join(output_base_dir,
                                                        get_str_concat('bigram-emerging_topic_score-strength',
                                                                       get_now_time_str()) + '.pkl')
@@ -46,21 +46,17 @@ def get_lookup_finder():
 
 
 def get_bigram_by_period_dict_of_list(lookup_finder):
-    if os.path.exists(bigram_by_period_dict_of_list_filepath):
-        bigram_by_period_dict_of_list = load_pkl(bigram_by_period_dict_of_list_filepath)
-    else:
-        print('=' * 5, '\n Start creating bigram_by_period_dict_of_list')
-        start = time.time()
-        bigram_by_period_dict_of_list = {'quarterly': list(), 'semiannually': list(), 'annually': list()}
-        for _period_category, (_period_dict, _) in period_dict.items():
-            for i, _period in enumerate(sorted(_period_dict.keys())):
-                _this_words = words_from_range(_period_dict, i, i + 1)
-                _this_finder = bigram_collocation_finder_custom(lookup_finder, _this_words, bigram_window_size,
-                                                                filter_stops)
-                _this_bigram_freq_rank_dict = bigram_freq_rank_dict(_this_finder, bigram_max_rank)
+    print('=' * 5, '\n Start creating bigram_by_period_dict_of_list')
+    start = time.time()
+    bigram_by_period_dict_of_list = {'quarterly': list(), 'semiannually': list(), 'annually': list()}
+    for _period_category, (_period_dict, _) in period_dict.items():
+        for i, _period in enumerate(sorted(_period_dict.keys())):
+            _this_words = words_from_range(_period_dict, i, i + 1)
+            _this_finder = bigram_collocation_finder_custom(lookup_finder, _this_words, bigram_window_size, filter_stops)
+            _this_bigram_freq_rank_dict = bigram_freq_rank_dict(_this_finder, bigram_max_rank)
 
-                bigram_by_period_dict_of_list[_period_category].append(_this_bigram_freq_rank_dict)
-        end_pkl(bigram_by_period_dict_of_list, bigram_by_period_dict_of_list_filepath, start)
+            bigram_by_period_dict_of_list[_period_category].append(_this_bigram_freq_rank_dict)
+    end_pkl(bigram_by_period_dict_of_list, bigram_by_period_dict_of_list_filepath, start)
     return bigram_by_period_dict_of_list
 
 

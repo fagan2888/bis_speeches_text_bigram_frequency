@@ -34,7 +34,7 @@ class Parameters:
         self.base_dir = base_dir
         self.data_dir = data_dir
         self.output_base_dir = output_base_dir
-        self.bis_raw_pkl_filepath = os.path.join(data_dir, 'bis_w_content_FINAL.pkl')
+        self.bis_raw_csv_filepath = os.path.join(data_dir, 'bis_w_content_FINAL_20191213.csv')
         self.fred_gdp_quarterly_csv_filepath = os.path.join(data_dir, 'fred_gdp_quarterly.csv')
         self.fred_gdp_semiannually_csv_filepath = os.path.join(data_dir, 'fred_gdp_semiannually.csv')
         self.fred_gdp_annually_csv_filepath = os.path.join(data_dir, 'fred_gdp_annually.csv')
